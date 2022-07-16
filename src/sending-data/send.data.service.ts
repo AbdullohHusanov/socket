@@ -16,11 +16,13 @@ export class SendDataService {
         return lastValueFrom(data)
     }
 
-    validate (data: any) {
-        if(data && typeof data === 'string') {
-            return data
-        } else if (typeof data !== 'string') {
-            return 'type string bo\'lishi kerak'
+    validate (data: any) {        
+        let result = []
+        for(let i in data) {           
+            if(data[i] === undefined || data[i] === '') {
+                result.push(i)
+            }
         }
+        return result
     }
 }

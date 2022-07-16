@@ -38,10 +38,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
     handleMessage (client: Socket, message: {sender: string, text: string, sendTo: number}) {
         
         let sendToUser = this.users.filter(el => el.id == message.sendTo)
+        let senderUser = this.users.filter(el => el.id == message.sender)
         sendToUser = sendToUser[sendToUser.length - 1].socketId
-        let thisuser = this.users.filter(el => el.id == message.sender)
+        senderUser = senderUser[senderUser.length - 1].socketId
         
         this.server.to(sendToUser).emit('receiveMessage', message.sendTo, message.sender, message.text)
+        this.server.to(senderUser).emit('receiveMessage', message.sendTo, message.sender, message.text)
         // if(sendToUser == []) {
         // }
         // else {
@@ -51,5 +53,5 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect, On
         // console.log(sendToUser);
         console.log(sendToUser[sendToUser.length - 1]);
         console.log(message.sendTo);
-    }
+    } 
 }

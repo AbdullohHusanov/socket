@@ -14,34 +14,50 @@ export class SendDataGateway implements OnGatewayInit, OnGatewayConnection, OnGa
     constructor(private sendDataService: SendDataService){}
     
     @WebSocketServer() server: Server;
-   
+    
+    private users = []
+
     afterInit(server: any) {
         // throw new Error("Method not implemented.");
     }
 
     handleDisconnect(client: any) {
         console.log('Disconnect......');
-        
-        // throw new Error("Method not implemented.");
     }
 
-    handleConnection(client: any, ...args: any[]) {
-        console.log('connecting......');        
-        // throw new Error("Method not implemented.");
+    handleConnection(client: Socket) {
+        client.emit('connection')
+        client.on('connection', async (arg) => {
+            let room = await this.sendDataService.getData(arg)
+            client.join(room)
+            this.users.push({id: arg, socketId: client.id})
+        })
+        console.log('connecting......');               
     }
 
 
     @SubscribeMessage('send')
     async receiveData(client: Socket, args: any) {
+        args.status = 201
+       
         let res = await this.sendDataService.getData(args.id)
-        let validateData = this.sendDataService.validate(args.data)
-        console.log(res, ' ', args.data);
-        client.join(res)
-        this.server.to(res).emit(args.data)
+        let validateData = this.sendDataService.validate(args)
+        let length = validateData.length
+        
+        if(validateData.length) {
+            args.status = 400
+            args.message = validateData[0] + ' is required!'
+        }
+        if(length > 1) {
+            let s = ''
+            for(let i of validateData) {
+                s += `${i} `
+            }
+            args.status = 400
+            args.message = s + 'are required!'
+        }
+        else{
+            this.server.to(res).emit('sendData', args)
+        }
     }
-
-    @SubscribeMessage('sendData')
-    sendData(client: Socket, data: any) {
-
-    }
-}
+} 
