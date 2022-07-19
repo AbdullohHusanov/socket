@@ -8,7 +8,10 @@ import { NotificationConsumer } from './notification.consumer';
 import { NotificationProducerService } from './notification.producer.service';
 import { SendDataModule } from './sending-data/send.data.module';
 import { ChatModule } from './chat/chat.module';
-import { ChatGateway } from './chat/chat.gateway';
+import { MongooseModule } from '@nestjs/mongoose';
+import { PushService } from './push.service';
+import { EnvService } from './services/env.service';
+// import webPush from '@types/web-push';
 
 @Module({
     imports: [
@@ -23,9 +26,11 @@ import { ChatGateway } from './chat/chat.gateway';
         BullModule.registerQueue({
             name: "notification-queue"
         }),
-        ChatModule
+        ChatModule,
+        // webPush
+        // MongooseModule.forRoot('mongodb://localhost/nest')
     ],
     controllers: [AppController],
-    providers: [AppService, AppGateway, NotificationProducerService, NotificationConsumer],
+    providers: [AppService, AppGateway, PushService, NotificationProducerService, NotificationConsumer, EnvService],
 })
 export class AppModule {}

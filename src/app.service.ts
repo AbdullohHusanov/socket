@@ -8,7 +8,7 @@ export class AppService {
     getHello(): string {
         return 'Hello World!';
     }
-
+    public token
     public async notification () {
         let data = await this.httpService.get('http://localhost:3002/products/notification', {
             headers: {
@@ -30,4 +30,7 @@ export class AppService {
             return false
         }
     }
+
+
+
 }
