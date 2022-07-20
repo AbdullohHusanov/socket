@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom, map } from 'rxjs';
-
+import * as mongoose from 'mongoose'
+import { App } from './schemas/app.schemas';
+import { AppRepository } from './app.repository';
+import { UpdateAppDto } from './dto/updateAppDto';
 @Injectable()
 export class AppService {
-    constructor (private readonly httpService: HttpService) {}
+    constructor (private readonly httpService: HttpService, private readonly appRepository: AppRepository) {}
     getHello(): string {
         return 'Hello World!';
     }
@@ -31,6 +34,23 @@ export class AppService {
         }
     }
 
-
-
+    getApps(): Promise<App[]> {
+        return this.appRepository.find({})
+    }
+    
+    getAppById(appId: string): Promise<App> {
+        return this.appRepository.findOne({appId})
+    }
+    
+    createApp(name: string, age: number, breed: string): Promise<App> {
+        return this.appRepository.create({
+            name,
+            age,
+            breed
+        })
+    }
+    
+    updateAppById(appId: string, appUpdateData: UpdateAppDto): Promise<App> {
+        return this.appRepository.findOneAndUpdate({appId},appUpdateData)
+    }
 }

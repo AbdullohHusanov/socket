@@ -1,18 +1,18 @@
-// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-// import { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-// export type AppDocument = App & Document;
+export type AppDocument = App & Document;
 
-// @Schema()
-// export class Cat {
-//   @Prop()
-//   name: string;
+@Schema()
+export class App {
+  @Prop()
+  name: string;
 
-//   @Prop()
-//   age: number;
+  @Prop()
+  age: number;
 
-//   @Prop()
-//   breed: string;
-// }
+  @Prop()
+  breed: string;
+}
 
-// export const AppSchema = SchemaFactory.createForClass(App);
+export const AppSchema = SchemaFactory.createForClass(App);

@@ -11,7 +11,8 @@ import { ChatModule } from './chat/chat.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PushService } from './push.service';
 import { EnvService } from './services/env.service';
-// import webPush from '@types/web-push';
+import { App, AppSchema } from './schemas/app.schemas';
+import { AppRepository } from './app.repository';
 
 @Module({
     imports: [
@@ -27,10 +28,11 @@ import { EnvService } from './services/env.service';
             name: "notification-queue"
         }),
         ChatModule,
-        // webPush
-        // MongooseModule.forRoot('mongodb://localhost/nest')
+        MongooseModule.forRoot('mongodb://localhost:27017/organisation-app'),
+        MongooseModule.forFeature([{name: App.name, schema: AppSchema}])
     ],
     controllers: [AppController],
-    providers: [AppService, AppGateway, PushService, NotificationProducerService, NotificationConsumer, EnvService],
+    providers: [AppService, AppGateway, PushService, NotificationProducerService, NotificationConsumer, EnvService, AppRepository],
 })
+
 export class AppModule {}

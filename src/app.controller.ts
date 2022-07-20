@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common';
 import { AppService } from './app.service';
 import { KeyModel, KeyModelClass } from './models/notification-key.model';
 import { PushService } from './push.service';
 import { EnvService } from './services/env.service';
+import { CreateAppDto } from './dto/createAppDto';
+import { UpdateAppDto } from './dto/updateAppDto';
+import { App } from './schemas/app.schemas';
 
 @Controller()
 export class AppController {
@@ -10,6 +13,7 @@ export class AppController {
         private envService: EnvService,
         private pushService: PushService) {}
     public token 
+
     @Get()
     getHello(): string {
         return this.appService.getHello();
@@ -42,5 +46,28 @@ export class AppController {
     test(){
         this.envService.setEnvValues('TEST','12321421')
         return "ok"
+    }
+
+    @Get('/app-all')
+    async all(): Promise<App[]>{
+        console.log(await this.appService.getApps());
+        
+        return this.appService.getApps()
+    }
+
+    @Get('/app-all:appId')
+    async one(@Param('appId') appId: string): Promise<App> {
+        return this.appService.getAppById(appId)
+    }
+
+    @Post('/app-create')
+    async create(@Body() createAppDto: CreateAppDto): Promise<App> {
+        let newApp = this.appService.createApp(createAppDto.name, createAppDto.age, createAppDto.breed)
+        return newApp
+    }
+
+    @Patch('/app-patch:appId')
+    async patch(@Param('appId') appId: string, updateAppDto: UpdateAppDto): Promise<App> {
+        return this.appService.updateAppById(appId, updateAppDto)
     }
 }
