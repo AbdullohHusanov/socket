@@ -1,37 +1,53 @@
-import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Options, Param, Patch, Post, Put } from '@nestjs/common';
 import { AppService } from './app.service';
 import { KeyModel, KeyModelClass } from './models/notification-key.model';
 import { PushService } from './push.service';
 import { EnvService } from './services/env.service';
-import { CreateAppDto } from './dto/createAppDto';
+import { UsersTextDto } from './dto/usersTextDto';
 import { UpdateAppDto } from './dto/updateAppDto';
-import { App } from './schemas/app.schemas';
+import { App } from './schemas/app.schema';
+import { JwtService } from '@nestjs/jwt';
+import { AdminService } from './admin/admin.service';
 
 @Controller()
 export class AppController {
-    constructor(private readonly appService: AppService, 
+    constructor(
+        private readonly appService: AppService, 
         private envService: EnvService,
-        private pushService: PushService) {}
+        private pushService: PushService,
+        private jwtService: JwtService,
+        private adminService: AdminService
+    ) {}
     public token 
 
-    @Get()
-    getHello(): string {
-        return this.appService.getHello();
+    @Post()
+    getHello(@Body() name: string): any {
+        
+        return this.adminService.setToken()
+        // console.log(name);
+        // let payload = this.jwtService.sign(name)
+        // return payload
     }
     
-    @Post('/gettoken')
-    gettoken (@Body() sw: any): any {
-        return this.pushService.pushr(sw);
-    }
+    // @Post('/gettoken')
+    // gettoken (@Body() sw: any): any {
+    //     return this.pushService.pushr(sw);
+    // }
 
     @Post('/set-user-token')
     setUserToken(@Body() data: any){
-        let key = new KeyModelClass(data);
-        this.pushService.pushr(key.getKey());
+        console.log(data);
+        
+        let key = new KeyModelClass(data.token);
+        this.pushService.pushr(key.getKey(), 'nima gap');        
+        data.token.organisation_id = data.user_data.organisation_id
+        data.token.user_id = data.user_data.user_id
+        this.appService.createApp(data.token)
+        
         return {message: "ok"}
     }
 
-    @Post('/getPublicNotificationKey')
+    @Post('/getPublicNotificationKey') 
     getPublicNotificationKey(){
         let publicKey = this.pushService.generateVapidKey();
         return {
@@ -42,32 +58,46 @@ export class AppController {
         }
     }
 
-    @Get('/test')
-    test(){
-        this.envService.setEnvValues('TEST','12321421')
-        return "ok"
-    }
+    // @Get('/test')
+    // test(){
+    //     this.envService.setEnvValues('TEST','12321421')
+    //     return "ok"
+    // }
 
-    @Get('/app-all')
-    async all(): Promise<App[]>{
-        console.log(await this.appService.getApps());
+    // @Get('/app-all')
+    // async all(): Promise<App[]>{        
+    //     let users = await this.appService.getApps()
+    //     setTimeout(() => {
+    //     for(let user = 0; user < users.length - 1; user++) {
+    //             console.log(users[user]);
+    //             this.pushService.pushr(users[user])
+    //         }
+    //     }, 5000)
         
-        return this.appService.getApps()
-    }
+    //     return []
+    // }
 
-    @Get('/app-all:appId')
-    async one(@Param('appId') appId: string): Promise<App> {
-        return this.appService.getAppById(appId)
-    }
+    // @Get('/app-all/:appId')
+    // async one(@Param('appId') appId: string): Promise<App[]> {
+        
+    //     console.log(appId);
+    //     let app = await this.appService.getAppsById(appId)
+    //     return []
+    // }
 
-    @Post('/app-create')
-    async create(@Body() createAppDto: CreateAppDto): Promise<App> {
-        let newApp = this.appService.createApp(createAppDto.name, createAppDto.age, createAppDto.breed)
-        return newApp
-    }
+    // @Get('/app-all-list')
+    // async many(@Body() data: UsersTextDto) {
+    //     console.log(data);
+        
+    //     this.appService.getAppsByList(data)
+    //     return 'ok'
+    // }
 
-    @Patch('/app-patch:appId')
-    async patch(@Param('appId') appId: string, updateAppDto: UpdateAppDto): Promise<App> {
-        return this.appService.updateAppById(appId, updateAppDto)
+    @Post('/noma')
+    async sdgsad(@Body() data: any): Promise<Array<any>> {
+        let f = await this.appService.getAppsById('2')
+
+        this.pushService.pushr(f[0], data)
+        return [f, data]
     }
 }

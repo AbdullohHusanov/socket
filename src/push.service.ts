@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { AppRepository } from './app.repository';
 import { KeyModel } from './models/notification-key.model';
 import { EnvService } from './services/env.service';
 let push = require('web-push')
 
 @Injectable()
 export class PushService {
-    constructor(protected envService: EnvService){
+    constructor(protected envService: EnvService, private appRepository: AppRepository){
 
     }
     generateVapidKey(): 
@@ -39,10 +40,12 @@ export class PushService {
 
     }    
     
-    async pushr(token: KeyModel) {
+    async pushr(token: any, text?: any) {
+        let payload = JSON.stringify({title: text.data, body: text.message })//'Lorem ipsum dolar sit amet'})
+        console.log(payload); 
         setTimeout(() => {
-            push.sendNotification(token, "Hello World !")
-
+            push.sendNotification(token, payload)
+            console.log('##########################');
         },5000);
     }
 }

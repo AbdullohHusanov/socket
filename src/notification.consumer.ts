@@ -16,9 +16,4 @@ export class NotificationConsumer {
             this.appGateway.server.to(user.socketId).emit('notification', job.data.text)
         }
     }
-    
-    @Process('n-users-send-with-queue')
-    nJob (job: Job<any>) {
-        // this.notificationJob()
-    }
 }

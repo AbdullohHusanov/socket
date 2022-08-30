@@ -11,12 +11,7 @@ export class NotificationProducerService {
         
         await this.queue.add('notification-job', {
             users: users,
-            text: data,
-            // server
-        }, {delay: 2000})
-
-        await this.queue.add('n-users-send-with-queue', {
-            users: users
+            text: data
         }, {delay: 2000})
     }
 }

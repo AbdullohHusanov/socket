@@ -1,5 +1,10 @@
 export interface UpdateAppDto {
-    name: string,
-    age: number,
-    breed: string
+    endpoint: string,
+    expirationTime?: null | number,
+    keys: {
+        p256dh: string,
+        auth: string
+    },
+    organisation_id: string,
+    user_id: string
 } 

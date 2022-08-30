@@ -1,18 +1,18 @@
 export interface KeyModel{
-    endpoint: String,
-    expirationTime?: null | Number,
+    endpoint: string,
+    expirationTime?: null | number,
     keys: {
-        p256dh: String,
-        auth: String
+        p256dh: string,
+        auth: string
     }
 }
 
 export class KeyModelClass{
-    public endpoint: String
-    public expirationTime?: null | Number
+    public endpoint: string
+    public expirationTime?: null | number
     public keys: {
-        p256dh: String,
-        auth: String
+        p256dh: string,
+        auth: string
     }
 
     public constructor(data: KeyModel){
@@ -20,7 +20,7 @@ export class KeyModelClass{
         this.expirationTime = data.expirationTime
         this.keys = data.keys
     }
-
+    
     public getKey(){
         return {
             endpoint: this.endpoint,
